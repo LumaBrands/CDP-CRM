@@ -64,6 +64,58 @@ npm install
 npm run dev
 ```
 
+## Deploy to Railway
+
+This project deploys as 3 Railway services: **PostgreSQL**, **Backend**, and **Frontend**.
+
+### 1. Create a new Railway project
+
+Go to [railway.app](https://railway.app) and create a new project from this repo.
+
+### 2. Add PostgreSQL
+
+Click **"+ New"** > **"Database"** > **"PostgreSQL"**. Railway will provision a Postgres instance and set `DATABASE_URL` automatically.
+
+### 3. Add the Backend service
+
+Click **"+ New"** > **"GitHub Repo"** > select this repo. Configure:
+
+| Setting | Value |
+|---------|-------|
+| **Root Directory** | `backend` |
+| **Builder** | Dockerfile |
+
+Add these environment variables:
+- `DATABASE_URL` → reference the Postgres service's `DATABASE_URL`
+- `JWT_SECRET_KEY` → generate a random secret (e.g., `openssl rand -hex 32`)
+- `CORS_ORIGINS` → your frontend Railway URL (e.g., `https://your-frontend.up.railway.app`)
+
+The backend auto-runs migrations and seeds on startup.
+
+### 4. Add the Frontend service
+
+Click **"+ New"** > **"GitHub Repo"** > select this repo. Configure:
+
+| Setting | Value |
+|---------|-------|
+| **Root Directory** | `frontend` |
+| **Builder** | Dockerfile |
+
+Add this environment variable:
+- `NEXT_PUBLIC_API_URL` → your backend Railway URL + `/api` (e.g., `https://your-backend.up.railway.app/api`)
+
+**Important:** Since `NEXT_PUBLIC_API_URL` is baked into the client bundle at build time, set it **before** the first deploy. If you change it later, trigger a redeploy.
+
+### 5. Generate domains
+
+For both backend and frontend services, go to **Settings** > **Networking** > **Generate Domain** to get public URLs.
+
+### Default login
+
+After first deploy: `admin@cdpcrm.com` / `admin123`
+
+---
+
 ## AI Agent Integration
 
 The AI agent authenticates via API key (`X-API-Key` header) and uses the same REST API:
