@@ -28,6 +28,9 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
+# Railway sets PORT dynamically; Next.js standalone reads it from env
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
 
 CMD ["node", "server.js"]
